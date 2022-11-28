@@ -348,6 +348,7 @@ left join (select file_id, count(*) `numbers` from all_unique_contact_numbers au
 set fd.number_of_original_file = cn.`numbers`, fd.number_of_invalid_contact = icn.`numbers`, fd.number_of_unique_contact = aucn.`numbers`
 where fd.id >= 1064;
 
+
 -- 21 Update or merge customer data from old to new 
 select * from contact_numbers_to_lcc where contact_no in (select contact_no from temp_merge_data)
 
@@ -359,4 +360,11 @@ delete from temp_sms_chairman where id in (select id from temp_update_any tua);
 
 
 
+-- 22 export into other server
+select * from contact_numbers cn where file_id >= 1064;
+select * from all_unique_contact_numbers where file_id >= 1064;
+select * from valid_contact_numbers vcn where file_id >= 1064;
+select * from invalid_contact_numbers icn where file_id >= 1064;
+select * from contact_numbers_to_lcc cntl where file_id >= 1064;
+select * from file_details fd ;
 
