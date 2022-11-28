@@ -195,9 +195,14 @@ select * from contact_numbers_to_lcc
 where id in (select id from removed_duplicate where `time` >= '2022-11-28');
 
 -- **** delete duplicate data from contact_numbers_to_lcc 
-delete from contact_numbers_to_lcc where id in (select id from removed_duplicate where `time` >= '2022-09-28');
+select * from temp_merge_data;
+
+delete from contact_numbers_to_lcc where id in (select id from removed_duplicate where `time` >= '2022-11-28');
 
 -- 16) count to check 
 select cntl.file_no , cntl.`type`, count(*) from file_details fd left join contact_numbers_to_lcc cntl on (fd.id = cntl.file_id)
 where fd.id >= 1064
 group by cntl.file_no, cntl.`type` ;
+
+
+
