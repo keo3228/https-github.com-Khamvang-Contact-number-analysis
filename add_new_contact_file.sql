@@ -254,5 +254,107 @@ from (
 ) `data_import`;
 
 
+-- 18) Check and delete the invalid numbers that SMS check
+delete from temp_update_any ;
+
+insert into temp_update_any 
+select id, contact_no, remark_3 , status, pbxcdr_time  from contact_numbers_to_lcc cntl where file_id in (1058,1059) and status = 'SMS_Failed';
+
+delete from payment where id in (select id from temp_update_any);
+
+-- 19) Calculate to pay for Tou 623
+select round(60000.26350 , 0) ;
+select round(22.22289 + 0.00005, 4) 'roundup', round(22.22289 - 0.00005, 4) 'rounddown';
+select round(848000.0 + 500.000, -3) 'roundup for LAK', round(100 + 4.9, -1) 'rounddown';
+
+select '' `No.`, fd.date_received, fd.staff_no, fd.staff_name, 
+	fd.broker_name, fd.broker_tel , fd.broker_work_place ,
+	fd.file_no , fd.`type` , fd.number_of_original_file , 
+	fd.number_of_original_file -
+	case when p.file_id = 983 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 984 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 985 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 986 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 987 then ROUND(count(p.contact_no)*8/100,0)
+		when p.file_id = 988 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 1039 then ROUND(count(p.contact_no)/2,0) -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1049 then ROUND(count(p.contact_no)/2,0) -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1055 then 0 -- we are already paid LAK 16.011.700,00 on 25/04/2022
+		else count(p.contact_no)
+	end 'count(not_pay)',
+	case when p.file_id = 983 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 984 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 985 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 986 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 987 then ROUND(count(p.contact_no)*8/100,0)
+		when p.file_id = 988 then ROUND(count(p.contact_no)/10,0)
+		when p.file_id = 1039 then ROUND(count(p.contact_no)/2,0) -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1049 then ROUND(count(p.contact_no)/2,0) -- from 1504	Joy it's randowm numbers
+		else count(p.contact_no)
+	end 'count(to_pay)',
+	case when p.file_id = 983 then sum(p.payment_amount)/10
+		when p.file_id = 984 then sum(p.payment_amount)/10
+		when p.file_id = 985 then sum(p.payment_amount)/10
+		when p.file_id = 986 then sum(p.payment_amount)/10
+		when p.file_id = 987 then sum(p.payment_amount)*8/100
+		when p.file_id = 988 then sum(p.payment_amount)/10
+		when p.file_id = 1039 then sum(p.payment_amount)/2 -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1049 then sum(p.payment_amount)/2 -- from 1504	Joy it's randowm numbers
+		else sum(p.payment_amount)
+	end 'calculate_amount',
+	case when p.file_id = 983 then ROUND(sum(p.payment_amount)/10 ,0)
+		when p.file_id = 984 then ROUND(sum(p.payment_amount)/10 ,0)
+		when p.file_id = 985 then ROUND(sum(p.payment_amount)/10 ,0)
+		when p.file_id = 986 then ROUND(sum(p.payment_amount)/10 ,0)
+		when p.file_id = 987 then ROUND(sum(p.payment_amount)*8/100 ,0)
+		when p.file_id = 988 then ROUND(sum(p.payment_amount)/10 ,0)
+		when p.file_id = 1039 then ROUND(sum(p.payment_amount)/2 ,0) -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1049 then ROUND(sum(p.payment_amount)/2 ,0) -- from 1504	Joy it's randowm numbers
+		when p.file_id = 1055 then 0 -- we already paid LAK 16.011.700,00 on 25/04/2022
+		else ROUND(sum(p.payment_amount),0)
+	end 'payment_amount',
+	concat('file_id = ', fd.id) `remark`
+from payment p 
+right join file_details fd on (p.file_id = fd.id)
+where fd.id >= 1058 
+group by fd.id ;
+
+
+select * from contact_numbers_to_lcc cntl where status is null and file_id in (1058,1059)
+
+-- temp update status and remove inactive contact_no 
+delete from temp_update_any ;
+insert into temp_update_any select id, contact_no , remark_3, status, pbxcdr_time from contact_numbers_to_lcc cntl 
+where file_id >= 1064 and left(contact_no, 5) in ('90302', '90202'); 
+
+-- update 
+select * from temp_update_any tua where contact_no not in (select contact_no from temp_etl_active_numbers tean);
+update temp_update_any set remark_3 = 'Telecom', status = 'ETL_inactive' where contact_no not in (select contact_no from temp_etl_active_numbers tean);
+
+update contact_numbers_to_lcc cntl left join temp_update_any tua on (cntl.id = tua.id) 
+set cntl.remark_3 = tua.remark_3, cntl.status = tua.status, cntl.date_updated = date(now())
+where cntl.id in (select id from temp_update_any );
+
+delete from payment where id in (select id from temp_update_any where status = 'ETL_inactive');
+
+
+
+
+-- 20 Add the numbers for table file_details 
+update file_details fd 
+left join (select file_id, count(*) `numbers` from contact_numbers group by file_id ) cn on (fd.id = cn.file_id)
+left join (select file_id, count(*) `numbers` from invalid_contact_numbers icn group by file_id ) icn on (fd.id = icn.file_id)
+left join (select file_id, count(*) `numbers` from all_unique_contact_numbers aucn group by file_id ) aucn on (fd.id = aucn.file_id)
+set fd.number_of_original_file = cn.`numbers`, fd.number_of_invalid_contact = icn.`numbers`, fd.number_of_unique_contact = aucn.`numbers`
+where fd.id >= 1064;
+
+-- 21 Update or merge customer data from old to new 
+select * from contact_numbers_to_lcc where contact_no in (select contact_no from temp_merge_data)
+
+select * from contact_numbers_to_lcc where file_id >= 1064;
+select * from temp_merge_data;
+
+select * from temp_sms_chairman where id in (select id from temp_update_any tua);
+delete from temp_sms_chairman where id in (select id from temp_update_any tua);
 
 
