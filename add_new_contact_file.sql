@@ -368,3 +368,11 @@ select * from invalid_contact_numbers icn where file_id >= 1064;
 select * from contact_numbers_to_lcc cntl where file_id >= 1064;
 select * from file_details fd ;
 
+
+-- 23 delete data from new database as delete from old
+delete from all_unique_contact_numbers 
+where id in (select id from removed_duplicate where `time` >= '2022-11-28'); -- done <= 1064
+
+delete from all_unique_contact_numbers 
+where id in (select id from removed_duplicate where `time` >= '2022-11-28'); -- done <= 1064
+
