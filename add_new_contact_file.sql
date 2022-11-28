@@ -129,9 +129,9 @@ select file_id , `type`, count(*)  from all_unique_contact_numbers aucn where fi
 -- order by FIELD(`type` , "Have Car","Need loan","Have address","Telecom"), id === order priorities by type and id
 insert into removed_duplicate
 select id, row_numbers, now() `time` from ( 
-		select id, row_number() over (partition by contact_no order by FIELD(`type` , "Have Car","Need loan","Have address","Telecom"), id) as row_numbers  
+		select id, row_number() over (partition by contact_no order by FIELD(`type` , "①Have Car","②Need loan","③Have address","④Telecom"), id) as row_numbers  
 		from all_unique_contact_numbers 
-		where file_id <= 1064
+		-- where file_id <= 1064
 		) as t1
 	where row_numbers > 1; -- done <= 1064
 
