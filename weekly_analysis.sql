@@ -137,7 +137,7 @@ select '' "id",
 	date(now()) "date_updated",
 	c.id "custtbl_id"
 from custtbl c left join negtbl n on (c.id = n.custid)
-where c.inputdate >= '2022-09-27' or n.inputdate >= '2022-10-26'; -- please chcek this date_created date from table all_unique_analysis
+where c.inputdate >= '2022-10-26' or n.inputdate >= '2022-10-26'; -- please chcek this date_created date from table all_unique_analysis
 
 
 -- 4) import data from database lalco_pbx to database contact_data_db
