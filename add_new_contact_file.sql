@@ -190,5 +190,14 @@ select `type` , count(*) from contact_numbers_to_lcc cntl where file_id >= 1064 
 -- **** insert the old data to keep in table temp_merge_data for doing merge after 
 delete from temp_merge_data ;
 
+insert into temp_merge_data 
+select * from contact_numbers_to_lcc 
+where id in (select id from removed_duplicate where `time` >= '2022-11-28');
 
+-- **** delete duplicate data from contact_numbers_to_lcc 
+delete from contact_numbers_to_lcc where id in (select id from removed_duplicate where `time` >= '2022-09-28');
 
+-- 16) count to check 
+select cntl.file_no , cntl.`type`, count(*) from file_details fd left join contact_numbers_to_lcc cntl on (fd.id = cntl.file_id)
+where fd.id >= 1064
+group by cntl.file_no, cntl.`type` ;
