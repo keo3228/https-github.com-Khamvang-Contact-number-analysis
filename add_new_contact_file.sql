@@ -366,6 +366,7 @@ select * from all_unique_contact_numbers where file_id >= 1064;
 select * from valid_contact_numbers vcn where file_id >= 1064;
 select * from invalid_contact_numbers icn where file_id >= 1064;
 select * from contact_numbers_to_lcc cntl where file_id >= 1064;
+select * from temp_merge_data file_id >= 1064;
 select * from removed_duplicate where `time` >= '2022-11-28';
 select * from file_details fd ;
 
