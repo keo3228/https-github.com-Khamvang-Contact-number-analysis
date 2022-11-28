@@ -136,6 +136,8 @@ select id, row_numbers, now() `time` from (
 	where row_numbers > 1; -- done <= 1064
 
 -- 13) check and remove duplicate Delete from all unique where id = id in table removed duplicate 
+select id from removed_duplicate where `time` >= '2022-11-28';
+
 delete from all_unique_contact_numbers 
 where id in (select id from removed_duplicate where `time` >= '2022-11-28'); -- done <= 1064
 
