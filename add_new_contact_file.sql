@@ -204,5 +204,55 @@ select cntl.file_no , cntl.`type`, count(*) from file_details fd left join conta
 where fd.id >= 1064
 group by cntl.file_no, cntl.`type` ;
 
+-- 17) import data to payment table
+insert into payment 
+(`id`,`file_id`,`contact_no`,`name`,`province_eng`,`province_laos`,`district_eng`,`district_laos`,`village`,`type`,`maker`,`model`,`year`,`remark_1`,`remark_2`,`remark_3`,`code`,`payment_amount`)
+select `id`,`file_id`,`contact_no`,`name`,`province_eng`,`province_laos`,`district_eng`,`district_laos`,`village`,`type`,`maker`,`model`,`year`,`remark_1`,`remark_2`,`remark_3`,`code`,`payment_amount`
+from ( 
+	select *, 
+	ROUND( case when `code` = '1-1000' then 1/150
+		when `code` = '1-1100' then 1/50
+		when `code` = '1-1010' then 1/40
+		when `code` = '1-1110' then 1/30
+		when `code` = '1-1001' then 1/30
+		when `code` = '1-1011' then 1/20
+		when `code` = '1-1101' then 1/20
+		when `code` = '1-1111' then 1/10
+		when `code` = '2-1000' then 1/300
+		when `code` = '2-1100' then 1/100
+		when `code` = '2-1010' then 1/100
+		when `code` = '2-1110' then 1/80
+		when `code` = '2-1001' then 1/80
+		when `code` = '2-1011' then 1/70
+		when `code` = '2-1101' then 1/70
+		when `code` = '2-1111' then 1/50
+		when `code` = '3-1000' then 1/600
+		when `code` = '3-1100' then 1/300
+		when `code` = '3-1010' then 1/250
+		when `code` = '3-1110' then 1/200
+		when `code` = '3-1001' then 1/150
+		when `code` = '3-1011' then 1/100
+		when `code` = '3-1101' then 1/100
+		when `code` = '3-1111' then 1/80
+		else ''
+	end - 0.00005, 4) `payment_amount` 
+from (
+		select 
+			cntl .* ,
+			concat( 
+			case when t.id = 1 then 1 when t.id = 2 then 2 when t.id = 3 then 2 when t.id = 4 then 3 end , "-" ,
+			case when cntl.contact_no != '' then 1 else 0 end ,
+			case when cntl.name != '' then 1 else 0 end ,
+			case when ((cntl.province_eng != '' or cntl.province_laos != '') and (cntl.district_eng != '' or cntl.district_laos != '') and cntl.village != '') != '' then 1 else 0 end ,
+			case when (cntl.maker != '' or cntl.model != '') != '' then 1 else 0 end
+				) `code`
+		from contact_numbers_to_lcc cntl 
+		left join tbltype t on (t.`type` = cntl.`type`)
+		where cntl.file_id >= 1064 
+		group by cntl.contact_no
+	) `tblpayment`
+) `data_import`;
+
+
 
 
