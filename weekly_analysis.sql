@@ -14,6 +14,14 @@ CREATE TABLE `all_unique_analysis_weekly` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
 
+# Backup data from all_unique_analysis_weekly to all_unique_analysis 
+
+select count(*) from all_unique_analysis_weekly auaw -- 399473
+
+-- 1 backup data
+insert into all_unique_analysis (contact_no , status , priority_type , date_created , date_updated , lalcocustomer_id , custtbl_id , pbxcdr_id , pbxcdr_called_time)
+select contact_no , status , priority_type , date_created , date_updated , lalcocustomer_id , custtbl_id , pbxcdr_id , pbxcdr_called_time  from all_unique_analysis_weekly ;
+
 -- 2) Export data to contact_data_db analysis  
 -- (1) contracted: export from database lalco to analysis in database contact_data_db table all_unique_analysis
 select * from all_unique_analysis_weekly where priority_type = 'contracted' order by date_created desc;
