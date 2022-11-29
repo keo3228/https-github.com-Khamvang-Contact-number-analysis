@@ -339,13 +339,22 @@ delete from payment where id in (select id from temp_update_any where status = '
 
 
 
-
 -- 20 Add the numbers for table file_details 
+select fd.id, cn.`numbers`, icn.`numbers`, aucn.`numbers`, p.`numbers`
+from file_details fd 
+left join (select file_id, count(*) `numbers` from contact_numbers group by file_id ) cn on (fd.id = cn.file_id)
+left join (select file_id, count(*) `numbers` from invalid_contact_numbers icn group by file_id ) icn on (fd.id = icn.file_id)
+left join (select file_id, count(*) `numbers` from all_unique_contact_numbers aucn group by file_id ) aucn on (fd.id = aucn.file_id)
+left join (select file_id, count(*) `numbers` from payment p group by file_id ) p on (fd.id = p.file_id)
+where fd.id >= 1064;
+
+
 update file_details fd 
 left join (select file_id, count(*) `numbers` from contact_numbers group by file_id ) cn on (fd.id = cn.file_id)
 left join (select file_id, count(*) `numbers` from invalid_contact_numbers icn group by file_id ) icn on (fd.id = icn.file_id)
 left join (select file_id, count(*) `numbers` from all_unique_contact_numbers aucn group by file_id ) aucn on (fd.id = aucn.file_id)
-set fd.number_of_original_file = cn.`numbers`, fd.number_of_invalid_contact = icn.`numbers`, fd.number_of_unique_contact = aucn.`numbers`
+left join (select file_id, count(*) `numbers` from payment p group by file_id ) p on (fd.id = p.file_id)
+set fd.number_of_original_file = cn.`numbers`, fd.number_of_invalid_contact = icn.`numbers`, fd.number_of_unique_contact = aucn.`numbers`, fd.number_for_payment = p.`numbers`
 where fd.id >= 1064;
 
 
