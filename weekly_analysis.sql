@@ -362,13 +362,13 @@ select now(); -- datetime on this time
 insert into temp_update_any 
 select cntl.id, cntl.contact_no, aua.priority_type `remark_3`, aua.status, 0 `pbxcdr_time` 
 from contact_numbers_to_lcc cntl left join all_unique_analysis_weekly aua on (cntl.contact_no = aua.contact_no)
-where aua.priority_type = 'pbx_cdr' and aua.status = 'NO ANSWER' and cntl.status != 'NO ANSWER' and aua.date_created >= '2022-10-25';
+where aua.priority_type = 'pbx_cdr' and aua.status = 'NO ANSWER' and cntl.status != 'NO ANSWER' and aua.date_created >= '2022-11-26';
 
 -- 7)insert data to temp_update_any
 insert into temp_update_any 
 select aua.id, aua.contact_no, aua.priority_type `remark_3`, aua.status, 0 `pbxcdr_time` 
 from all_unique_analysis_weekly  aua 
-where aua.priority_type = 'pbx_cdr' and aua.status = 'NO ANSWER' and aua.date_created >= '2022-10-25';
+where aua.priority_type = 'pbx_cdr' and aua.status = 'NO ANSWER' and aua.date_created >= '2022-11-26';
 
 select cntl.id, cntl.contact_no, 'pbx_cdr' `remark_3`, null status, 0 `pbxcdr_time` from contact_numbers_to_lcc cntl 
 where cntl.contact_no in (select contact_no from temp_update_any tua);
@@ -399,10 +399,10 @@ insert into temp_update_any
 select id, concat('90', contact_no) 'contact_no', '' remark_3, '' status, 0 pbxcdr_time from temp_sms_chairman where date_updated >= '2022-09-01' and status = 2
 
 select id, contact_no, remark_3 , status, date_updated from contact_numbers_to_lcc cntl 
-where id in (select id from temp_update_any ) and status is not null and date_updated != '2022-09-28' and status not in ('Active', 'Approved','Draft','ANSWERED','X','C');
+where id in (select id from temp_update_any ) and status is not null and date_updated != '2022-11-26' and status not in ('Active', 'Approved','Draft','ANSWERED','X','C');
 
 update contact_numbers_to_lcc set remark_3 = 'Telecom', status = 'SMS_Failed', date_updated = date(now()) 
-where id in (select id from temp_update_any ) and status is not null and date_updated != '2022-09-28' and status not in ('Active', 'Approved','Draft','ANSWERED','X','C');
+where id in (select id from temp_update_any ) and status is not null and date_updated != '2022-11-26' and status not in ('Active', 'Approved','Draft','ANSWERED','X','C');
 
 delete from temp_update_any ;
 
