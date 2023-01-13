@@ -205,3 +205,26 @@ from contact_numbers_to_lcc
 where (status is null or status in ('F','G','G1','G2')) and id not in (select id from temp_sms_chairman) --  where status in (1,2)
 	and CONCAT(LENGTH(contact_no), left( contact_no, 5)) not in ('1190302', '1290202') 
 group by telecom;
+
+
+
+/* ___________________________ Order 2023-01-13 ___________________________ */
+-- 1_)
+select id, staff_no , staff_name , `type` , category , number_of_original_file  from file_details fd 
+
+-- 2_)
+select file_id , count(*) 
+from contact_numbers_to_lcc cntl 
+group by file_id ;
+
+-- 3_)
+select file_id , count(*) 
+from contact_numbers_to_lcc cntl 
+where cntl.id in (select id from temp_sms_chairman tean where status = 1) -- to export the rank F & G the SMS success
+	 	or cntl.id in (select id from temp_etl_active_numbers tean2 ) -- ETL active
+	 	or cntl.remark_3 = 'contracted'
+	 	or cntl.remark_3 = 'ringi_not_contract' 
+	 	or cntl.remark_3 = 'aseet_not_contract'
+	 	or (cntl.remark_3 = 'prospect_sabc' and cntl.status in ('S','A','B','C'))
+	 	or cntl.status = 'ANSWERED'
+group by file_id ;
