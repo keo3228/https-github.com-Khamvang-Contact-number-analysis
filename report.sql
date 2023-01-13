@@ -228,3 +228,13 @@ where cntl.id in (select id from temp_sms_chairman tean where status = 1) -- to 
 	 	or (cntl.remark_3 = 'prospect_sabc' and cntl.status in ('S','A','B','C'))
 	 	or cntl.status = 'ANSWERED'
 group by file_id ;
+
+
+-- 4_) 
+select province_eng , district_eng , count(*) 
+from village_master_project vmp 
+group by province_eng , district_eng;
+
+
+
+
