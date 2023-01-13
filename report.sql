@@ -210,7 +210,8 @@ group by telecom;
 
 /* ___________________________ Order 2023-01-13 ___________________________ */
 -- 1_)
-select id, staff_no , staff_name , `type` , category , number_of_original_file, date_received  from file_details fd 
+select id, null 'Branch', null 'Department', null 'Unit', staff_no , staff_name, staff_tel , `type` , category , date_received, company_name , number_of_original_file
+from file_details fd ;
 
 -- 2_)
 select file_id , count(*) 
