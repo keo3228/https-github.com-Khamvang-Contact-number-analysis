@@ -210,7 +210,8 @@ group by telecom;
 
 /* ___________________________ Order 2023-01-13 ___________________________ */
 -- 1_)
-select id, null 'Branch', null 'Department', null 'Unit', staff_no , staff_name, staff_tel , `type` , category , date_received, company_name , number_of_original_file
+select id, null 'Branch', null 'Department', null 'Unit', staff_no , staff_name, staff_tel , broker_name, broker_tel , `type` , category , date_received, company_name , number_of_original_file,
+	null 'can contact', null ' staff status', null 'Sales/Internal', null 'current_staff_no', null 'current_staff_name'
 from file_details fd ;
 
 -- 2_)
