@@ -240,3 +240,66 @@ group by province_eng , district_eng;
 
 
 
+-- Hattori request for Yoshi -- ative
+select *, count(*) from 
+	(
+select 
+	case when cntl.maker != '' or cntl.model != '' then 'have_car' end `have_car`,
+	case when fd.category = '①GOVERNMENT' then 'business_owner' end `business_owner`,
+	case when cntl.province_eng != '' and cntl.district_eng != '' and cntl.village != '' then 'have_address' end `have_address`,
+	case when cntl.remark_3 = 'contracted' then 'contracted'
+			when cntl.remark_3 = 'ringi_not_contract' then 'ringi_not_contract'
+			when cntl.remark_3 = 'aseet_not_contract' then 'aseet_not_contract'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('S','A','B','C') then 'prospect_sabc'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('F') then 'prospect_f'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('G','G1','G2') then 'prospect_g'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('X') then 'contracted'
+			when cntl.remark_3 = 'pbx_cdr' and cntl.status = 'ANSWERED' then 'ANSWERED'
+			when cntl.remark_3 = 'pbx_cdr' and cntl.status = 'NO ANSWER' then 'NO ANSWER'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'ETL_active' then 'Telecom_active'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'ETL_inactive' then 'Telecom_inactive'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'SMS_success' then 'Telecom_active'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'SMS_Failed' then 'Telecom_inactive'
+			else cntl.remark_3 
+		end `result` 
+from contact_numbers_to_lcc cntl left join file_details fd on (fd.id = cntl.file_id)
+where cntl.id in (select id from temp_sms_chairman tean where status = 1) -- to export the rank F & G the SMS success
+	 	or cntl.id in (select id from temp_etl_active_numbers tean2 ) -- ETL active
+) t
+group by `have_car`, `business_owner`, `have_address`, `result`;
+
+
+-- Hattori request for Yoshi -- all source
+select *, count(*) from 
+	(
+select 
+	case when cntl.maker != '' or cntl.model != '' then 'have_car' end `have_car`,
+	case when fd.category = '①GOVERNMENT' then 'business_owner' end `business_owner`,
+	case when cntl.province_eng != '' and cntl.district_eng != '' and cntl.village != '' then 'have_address' end `have_address`,
+	case when cntl.remark_3 = 'contracted' then 'contracted'
+			when cntl.remark_3 = 'ringi_not_contract' then 'ringi_not_contract'
+			when cntl.remark_3 = 'aseet_not_contract' then 'aseet_not_contract'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('S','A','B','C') then 'prospect_sabc'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('F') then 'prospect_f'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('G','G1','G2') then 'prospect_g'
+			when cntl.remark_3 = 'prospect_sabc' and cntl.status in ('X') then 'contracted'
+			when cntl.remark_3 = 'pbx_cdr' and cntl.status = 'ANSWERED' then 'ANSWERED'
+			when cntl.remark_3 = 'pbx_cdr' and cntl.status = 'NO ANSWER' then 'NO ANSWER'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'ETL_active' then 'Telecom_active'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'ETL_inactive' then 'Telecom_inactive'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'SMS_success' then 'Telecom_active'
+			when cntl.remark_3 = 'Telecom' and cntl.status = 'SMS_Failed' then 'Telecom_inactive'
+			else cntl.remark_3 
+		end `result` 
+from contact_numbers_to_lcc cntl left join file_details fd on (fd.id = cntl.file_id)
+) t
+group by `have_car`, `business_owner`, `have_address`, `result`;
+
+
+
+
+
+
+
+
+
