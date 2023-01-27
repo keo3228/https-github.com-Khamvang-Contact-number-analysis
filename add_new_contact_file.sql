@@ -164,7 +164,7 @@ select cn.`id`,cn.`file_id`,cn.`contact_no`,
 		when cn.province_eng = 'HUAPHAN' then 'Houaphan'
 		when cn.province_eng = 'KHAMMOUAN' then 'Thakek'
 		when cn.province_eng = 'LUANG PRABANG' then 'Luangprabang'
-		when cn.province_eng = 'LUANGNAMTHA' then 'Luangprabang'
+		when cn.province_eng = 'LUANGNAMTHA' then 'Luangnamtha'
 		when cn.province_eng = 'OUDOMXAY' then 'Oudomxay'
 		when cn.province_eng = 'PHONGSALY' then 'Oudomxay'
 		when cn.province_eng = 'SALAVANH' then 'Salavan'
