@@ -385,3 +385,43 @@ where id in (select id from removed_duplicate where `time` >= '2023-01-26'); -- 
 
 delete from all_unique_contact_numbers 
 where id in (select id from removed_duplicate where `time` >= '2023-01-26'); -- done <= 1066
+
+
+
+-- 24 Insert or Export from one server to one server
+-- 01)____First method_______
+select * from file_details fd where id >= 1066;
+
+select * from contact_numbers cn where file_id >= 1066;
+
+select * from all_unique_contact_numbers aucn where file_id >= 1066;
+
+select * from contact_numbers_to_lcc cntl where file_id >= 1066;
+
+select * from removed_duplicate rd where `time` >= '2023-01-26';
+
+select * from temp_merge_data tmd where file_id >= 1066;
+
+select * from valid_contact_numbers vcn where file_id >= 1066;
+
+select * from invalid_contact_numbers icn where file_id >= 1066;
+
+select * from payment p where file_id >= 1066;
+
+-- _________________________ Delete duplicate record from new database _________________________
+delete from all_unique_contact_numbers 
+where id in (select id from removed_duplicate where `time` >= '2023-01-26'); -- done <= 1066
+
+delete from contact_numbers_to_lcc where id in (select id from removed_duplicate where `time` >= '2023-01-26');
+
+
+
+-- 02) _______Second method ________
+C:\Users\Advice>mysqldump -u root -p -h localhost --port 3306 contact_data_db file_details contact_numbers all_unique_contact_numbers contact_numbers_to_lcc removed_duplicate temp_merge_data valid_contact_numbers invalid_contact_numbers payment > D:\"OneDrive - LALCO lalcodb1"\"OneDrive - Lao Asean Leasing Co. Ltd"\contact_data_db\new_contact_number_20230127.sql
+Enter password:
+
+-- _________________________ Import table  _________________________ 
+C:\Users\Advice>mysql -u root -p -h localhost --port 3306 contact_data_db < D:\"OneDrive - LALCO lalcodb1"\"OneDrive - Lao Asean Leasing Co. Ltd"\contact_data_db\new_contact_number_20230127.sql
+Enter password:
+
+
